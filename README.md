@@ -37,6 +37,24 @@ Dependencies used by the codebase:
 
 Important note: some `.vcxproj` files contain machine-specific absolute include/library paths (for example `C:\SUPER\...` or `C:\boost_1_67_0\...`). You will likely need to retarget these paths to match your machine (Project Properties → C/C++ → Additional Include Directories; Linker → Additional Library Directories).
 
+## Build prerequisites (Linux)
+
+This repository includes Visual Studio “Linux” projects intended for remote build/deploy from Visual Studio (VS copies sources to the Linux machine, builds there, and can debug remotely).
+
+On the Linux target machine you need, at minimum:
+
+- OpenSSH server (for VS remote build)
+- `g++`, `gdb`, and `gdbserver`
+- Development libraries used by the Linux project link settings:
+  - ZeroMQ (`libzmq`)
+  - Boost.System (`boost_system`)
+  - pthread, `dl`
+  - ODBC libraries (`odbc`, `odbccr`)
+
+Package names vary by distro. On Debian/Ubuntu-family systems, a typical starting point is:
+
+`sudo apt-get install openssh-server g++ gdb gdbserver libzmq3-dev libboost-system-dev unixodbc-dev`
+
 ## Building
 
 1. Open [Geo-Location-Service.sln](Geo-Location-Service.sln) in Visual Studio.
@@ -47,6 +65,27 @@ Expected outputs (x64 configs):
 
 - Host service exe goes to `bin/` (see `geo_location/geo_location.vcxproj` `OutDir`)
 - Plugins go to `bin/services/` and are built with `.gps` extension (see `tk103/tk103.vcxproj` `TargetExt` + `OutDir`)
+
+### Building (Linux)
+
+The solution contains Linux projects:
+
+- `geo_location_svc_linux` (host service)
+- `tk_103_linux` (TK103 plugin)
+
+To build from Visual Studio using remote Linux development:
+
+1. Install the “Linux development with C++” workload in Visual Studio.
+2. Configure a Linux connection (Tools → Options → Cross Platform → Connection Manager).
+3. In the solution configurations dropdown, select `Debug` + `x64`.
+4. Build `tk_103_linux` and `geo_location_svc_linux`.
+
+By default, these projects are configured to deploy outputs to:
+
+- Host output directory: `/usr/apps/geolocation_svc/` (see `geo_location_svc_linux/geo_location_svc_linux.vcxproj` `OutDir`)
+- Plugin output directory: `/usr/apps/geolocation_svc/services/` (see `tk_103_linux/tk_103_linux.vcxproj` `OutDir`)
+
+Note: the Linux project files also contain machine-specific include paths (for example `C:\linuxdev\...`). You may need to adjust include/library settings in the project properties to match your Linux environment.
 
 ## Running the service
 
