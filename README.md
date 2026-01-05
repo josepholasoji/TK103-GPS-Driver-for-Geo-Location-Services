@@ -7,7 +7,7 @@
 
 Geolocation service (GS) is a small C++ middleware that accepts GPS tracker device messages over TCP and processes them via a pluggable “device driver” model.
 
-This repository ships with a TK103 driver plugin and a host service that:
+This repository implements a plugin-architecture and ships with a codebase for a TK103 driver plugin and a host service that:
 
 - Loads device driver plugins from a `services/` folder at startup
 - Opens one TCP listener per plugin on the port returned by the plugin (TK103: `2772`)
